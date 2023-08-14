@@ -7,7 +7,6 @@ public class InputSystemCntrl : MonoBehaviour
 {
     private InputSystem inputSystem;
 
-    private InputAction attackAction;
     private InputAction moveAction;
     private InputAction mouseAction;
 
@@ -16,8 +15,9 @@ public class InputSystemCntrl : MonoBehaviour
         return (moveAction.ReadValue<Vector2>());
     }
 
-    public Vector2 GetMouseDirection()
+    public Vector2 GetMousePosition()
     {
+        //return (Mouse.current.position.ReadValue());
         return (mouseAction.ReadValue<Vector2>());
     }
 
@@ -30,16 +30,19 @@ public class InputSystemCntrl : MonoBehaviour
     {
         inputSystem = new InputSystem();
 
-        attackAction = inputSystem.Player.Attack;
+        moveAction = inputSystem.Player.Movement;
+        mouseAction = inputSystem.Player.Mouse;
     }
 
     private void OnEnable()
     {
-        
+        moveAction.Enable();
+        mouseAction.Enable();
     }
 
     private void OnDisable()
     {
-        
+        moveAction.Disable();
+        mouseAction.Disable();
     }
 }
