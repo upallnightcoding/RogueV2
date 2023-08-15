@@ -29,8 +29,6 @@ public class CameraSystemCntrl : MonoBehaviour
 
     private void FollowTarget()
     {
-        Debug.Log("Follow Target ...");
-
         Vector3 position = Vector3.SmoothDamp
             (transform.position, target.position, ref cameraVelocity, gameData.cameraFollowSpeed);
 

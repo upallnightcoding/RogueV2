@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ArgoCntrl : MonoBehaviour
 {
-    [SerializeField] private InputSystemCntrl isc;
+    [SerializeField] private InputSystemCntrl inputSystemCntrl;
     [SerializeField] private CharacterController charCntrl;
     [SerializeField] private Transform cameraObject;
     [SerializeField] private Animator animator;
@@ -13,17 +13,19 @@ public class ArgoCntrl : MonoBehaviour
 
     private ArgoState crntState = ArgoState.MOVE;
 
+    private ArgoCombatCntrl animationCntrl;
+
     private float speed = 1.0f;
 
     private void Start()
     {
-        animator.SetFloat("MovementSpeed", 0.5f);
+        animationCntrl = GetComponent<ArgoCombatCntrl>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        Vector2 argoDirection = isc.GetMoveDirection();
+        Vector2 moveDirection = inputSystemCntrl.GetMoveDirection();
 
         switch(crntState)
         {
@@ -32,7 +34,7 @@ public class ArgoCntrl : MonoBehaviour
             case ArgoState.IDLE:
                 break;
             case ArgoState.MOVE:
-                crntState = StateMove(argoDirection, Time.deltaTime);
+                crntState = StateMove(moveDirection, Time.deltaTime);
                 break;
         }
     }
@@ -52,12 +54,12 @@ public class ArgoCntrl : MonoBehaviour
         return (ArgoState.MOVE);
     }
 
-    private void MovePlayerDirection(Vector2 playerDirection, float dt)
+    private void MovePlayerDirection(Vector2 moveDirection, float dt)
     {
         float gravitySpeed = 0.0f;
 
-        Vector3 direction = cameraObject.forward * playerDirection.y;
-        direction = direction + cameraObject.right * playerDirection.x;
+        Vector3 direction = cameraObject.forward * moveDirection.y;
+        direction = direction + cameraObject.right * moveDirection.x;
         direction.y = 0.0f;
         direction.Normalize();
 
@@ -72,9 +74,24 @@ public class ArgoCntrl : MonoBehaviour
         transform.rotation = playerRotation;
     }
 
+    private void OnAttack()
+    {
+        animationCntrl.OnAttack();
+    }
+
     private bool IsPlayerMoving(Vector2 playerDirection)
     {
         return((int)playerDirection.magnitude != 0);
+    }
+
+    private void OnEnable()
+    {
+        InputSystemCntrl.OnAttackEvent += OnAttack;
+    }
+
+    private void OnDisable()
+    {
+        InputSystemCntrl.OnAttackEvent -= OnAttack;
     }
 
     private enum ArgoState

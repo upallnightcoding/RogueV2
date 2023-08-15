@@ -14,4 +14,7 @@ public class GameData : ScriptableObject
     public float cameraLookSpeed;
     public float cameraPivotSpeed;
     public float minmaxPivotAngle;
+
+    [Header("Combat Attributes")]
+    public string[] comboList;
 }

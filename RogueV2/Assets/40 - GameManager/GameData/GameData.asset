@@ -18,3 +18,12 @@ MonoBehaviour:
   cameraLookSpeed: 0.3
   cameraPivotSpeed: 0.3
   minmaxPivotAngle: 35
+  comboList:
+  - Attack_1 H WW
+  - Attack_2 H WW
+  - Attack_3 H WW
+  - Attack_4 H WW
+  - Attack_5 H WW
+  - Attack_6 H WW
+  - Attack_7 H WW
+  - Attack_8 H WW
