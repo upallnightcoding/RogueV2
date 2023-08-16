@@ -11,7 +11,7 @@ public class ArgoCntrl : MonoBehaviour
     [SerializeField] private CameraSystemCntrl cameraCntrl;
     [SerializeField] private GameData gameData;
 
-    private ArgoState crntState = ArgoState.MOVE;
+    private ArgoState crntState = ArgoState.IDLE;
 
     private ArgoCombatCntrl animationCntrl;
 
@@ -20,6 +20,9 @@ public class ArgoCntrl : MonoBehaviour
     private void Start()
     {
         animationCntrl = GetComponent<ArgoCombatCntrl>();
+        animator = GetComponent<Animator>();
+
+        animator.SetFloat("MovementSpeed", 0.0f);
     }
 
     // Update is called once per frame
@@ -29,12 +32,16 @@ public class ArgoCntrl : MonoBehaviour
 
         switch(crntState)
         {
-            case ArgoState.START:
+            case ArgoState.INIT:
                 break;
             case ArgoState.IDLE:
+                crntState = StateIdle(moveDirection);
                 break;
-            case ArgoState.MOVE:
-                crntState = StateMove(moveDirection, Time.deltaTime);
+            case ArgoState.ROAMING:
+                crntState = StateRoaming(moveDirection, Time.deltaTime);
+                break;
+            case ArgoState.COMBAT:
+                crntState = StateCombat();
                 break;
         }
     }
@@ -44,14 +51,38 @@ public class ArgoCntrl : MonoBehaviour
         cameraCntrl.HandleAllCameraMovement();
     }
 
-    private ArgoState StateMove(Vector2 direction, float dt)
+    private ArgoState StateIdle(Vector2 direction)
     {
+        ArgoState state = ArgoState.IDLE;
+
+        if (IsPlayerMoving(direction))
+        {
+            state = ArgoState.ROAMING;
+            animator.SetFloat("MovementSpeed", 0.5f);
+        }
+
+        return (state);
+    }
+
+    private ArgoState StateCombat()
+    {
+        return (ArgoState.COMBAT);
+    }
+
+    private ArgoState StateRoaming(Vector2 direction, float dt)
+    {
+        ArgoState state = ArgoState.ROAMING;
+
         if (IsPlayerMoving(direction))
         {
             MovePlayerDirection(direction, dt);
+        } 
+        else
+        {
+            state = ArgoState.IDLE;
         }
 
-        return (ArgoState.MOVE);
+        return (state);
     }
 
     private void MovePlayerDirection(Vector2 moveDirection, float dt)
@@ -96,8 +127,9 @@ public class ArgoCntrl : MonoBehaviour
 
     private enum ArgoState
     {
-        START,
+        INIT,
         IDLE,
-        MOVE
+        ROAMING,
+        COMBAT
     }
 }
